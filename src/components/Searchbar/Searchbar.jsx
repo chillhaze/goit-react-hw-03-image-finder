@@ -21,6 +21,7 @@ export class Searchbar extends Component {
   };
 
   render() {
+    const { searchItem } = this.state;
     return (
       <header className="Searchbar">
         <form className="SearchForm" onSubmit={this.handleSubmit}>
@@ -33,11 +34,12 @@ export class Searchbar extends Component {
           </button>
 
           <input
+            value={searchItem}
             onChange={this.handleFormChange}
             className="SearchForm-input"
             type="text"
-            // autocomplete="off"
-            // autofocus
+            autoComplete="off"
+            autoFocus
             placeholder="Search images and photos"
           />
         </form>
