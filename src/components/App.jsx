@@ -9,6 +9,7 @@ import { Modal } from './Modal';
 export class App extends Component {
   state = {
     searchItem: '',
+    page: 1,
     currentImage: '',
     modalOpen: false,
   };
@@ -34,8 +35,12 @@ export class App extends Component {
     this.setState({ modalOpen: false });
   };
 
+  onBtnClick = () => {
+    this.setState(prevState => ({ page: prevState.page + 1 }));
+  };
+
   render() {
-    const { searchItem, currentImage, modalOpen } = this.state;
+    const { searchItem, page, currentImage, modalOpen } = this.state;
     // console.log(this.state.searchItem);
     // console.log(this.state.searchResult);
 
@@ -45,10 +50,11 @@ export class App extends Component {
       <div>
         <Searchbar onSubmit={this.handleFormSubmit} />
         <ImageGallery
-          perPage={this.props.per_page}
           searchItem={searchItem}
+          page={page}
           searchResult={this.handleSearchResult}
           currentImage={this.handleItemClick}
+          onBtnClick={this.onBtnClick}
         />
 
         {modalOpen && (

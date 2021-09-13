@@ -1,40 +1,28 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { v4 as uuidv4 } from 'uuid';
+import { fetchItems } from '../../api-services/fetch-api';
 import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
 import { Button } from '../Button/Button';
 
 import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 
-const BASE_URL = 'https://pixabay.com/api/';
-const API_KEY = '22569115-02a432c6c1c62bbb3a59801b7';
-const PER_PAGE = 12;
-
 export class ImageGallery extends Component {
   state = {
-    page: 1,
-    per_page: PER_PAGE,
-
     searchResult: [],
-    searchItem: '',
 
     error: null,
-
-    largeImg: '',
     status: 'idle',
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const searchItem = this.props.searchItem;
-    const { page, per_page } = this.state;
+    const { searchItem, page } = this.props;
 
     if (prevProps.searchItem !== searchItem) {
-      // this.setState({this.state.searchItem = ''});
       this.setState({ status: 'pending' });
 
-      fetch(
-        `${BASE_URL}?q=${searchItem}&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=${per_page}}`,
-      )
+      fetchItems(searchItem, page)
         .then(response => {
           if (response.ok) {
             return response.json();
@@ -52,15 +40,39 @@ export class ImageGallery extends Component {
         })
         .catch(error => this.setState({ error: error, status: 'rejected' }));
     }
+
+    if (prevProps.page !== page) {
+      this.setState({ status: 'pending' });
+
+      fetchItems(searchItem, page)
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          }
+          return Promise.reject(new Error(`${searchItem} returned with error`));
+        })
+        .then(data => {
+          const { hits } = data;
+          console.log(hits);
+
+          if (hits.length === 0) {
+            this.setState({ searchResult: [], status: 'idle' });
+            return;
+          }
+
+          this.setState(prevState => ({
+            searchResult: [...prevState.searchResult, ...hits],
+          }));
+
+          return this.setState({ status: 'resolved' });
+        })
+        .catch(error => this.setState({ error: error, status: 'rejected' }));
+    }
+    this.scrollDown();
   }
 
-  handleLoadMoreBtnClick = () => {
-    this.setState(prevState => ({
-      per_page: prevState.per_page + PER_PAGE,
-      page: prevState.page + 1,
-    }));
-
-    window.scrollTo({
+  scrollDown = () => {
+    return window.scrollTo({
       top: document.documentElement.scrollHeight,
       behavior: 'smooth',
     });
@@ -70,7 +82,7 @@ export class ImageGallery extends Component {
     const { searchResult, error, status } = this.state;
 
     if (status === 'idle') {
-      return <h2>hello</h2>;
+      return <h2> </h2>;
     }
 
     if (status === 'pending') {
@@ -95,10 +107,11 @@ export class ImageGallery extends Component {
       return (
         <section>
           <ul className="ImageGallery">
-            {searchResult.map(item => {
+            {searchResult.map((item, index) => {
+              const itemId = uuidv4();
               return (
                 <ImageGalleryItem
-                  key={item.id}
+                  key={itemId}
                   id={item.id}
                   src={item.webformatURL}
                   tag={item.tag}
@@ -107,8 +120,8 @@ export class ImageGallery extends Component {
               );
             })}
           </ul>
-          {searchResult.length > PER_PAGE && (
-            <Button onClick={this.handleLoadMoreBtnClick} />
+          {searchResult.length >= 0 && status !== 'idle' && (
+            <Button onBtnClick={this.props.onBtnClick} />
           )}
         </section>
       );
