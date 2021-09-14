@@ -1,4 +1,4 @@
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 export const Button = ({ onBtnClick }) => {
   return (
@@ -8,4 +8,8 @@ export const Button = ({ onBtnClick }) => {
       </button>
     </div>
   );
+};
+
+Button.propTypes = {
+  onBtnClick: PropTypes.func,
 };

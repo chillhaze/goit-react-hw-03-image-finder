@@ -230,3 +230,8 @@ img {
 .Loader {
   display: block;
 }
+
+.error {
+  margin: 50px auto;
+  text-align: center;
+}

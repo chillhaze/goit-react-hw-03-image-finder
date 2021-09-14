@@ -1,21 +1,25 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import toast from 'react-hot-toast';
 
 export class Searchbar extends Component {
   state = {
     searchItem: '',
   };
 
+  // Считываю результат поиска
   handleFormChange = e => {
+    this.setState({ searchItem: '' });
     this.setState({ searchItem: e.currentTarget.value.toLowerCase() });
   };
 
+  // Передаю результат поиска
   handleSubmit = e => {
     e.preventDefault();
     if (this.state.searchItem.trim() === '') {
-      console.log('enter image name');
+      toast.error('empty field');
       return;
     }
-
     this.props.onSubmit(this.state.searchItem);
     this.setState({ searchItem: '' });
   };
@@ -47,3 +51,7 @@ export class Searchbar extends Component {
     );
   }
 }
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func,
+};
