@@ -12,9 +12,7 @@ export const ImageGallery = ({ searchResult, onSelect }) => {
           return (
             <ImageGalleryItem
               key={itemId}
-              id={item.id}
-              src={item.webformatURL}
-              tag={item.tag}
+              item={item}
               onClick={() => onSelect(item)}
             />
           );

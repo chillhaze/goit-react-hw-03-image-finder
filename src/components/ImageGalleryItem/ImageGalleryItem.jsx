@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
 
-export const ImageGalleryItem = ({ id, src, tag, onClick }) => {
+export const ImageGalleryItem = ({ id, item, onClick }) => {
+  const { webformatURL, tag } = item;
+  // console.log(item);
   return (
     <li className="ImageGalleryItem">
       <img
         id={id}
-        src={src}
+        src={webformatURL}
         alt={tag}
         onClick={onClick}
         className="ImageGalleryItem-image"
@@ -15,7 +17,8 @@ export const ImageGalleryItem = ({ id, src, tag, onClick }) => {
 };
 
 ImageGalleryItem.propTypes = {
-  id: PropTypes.number,
+  id: PropTypes.string,
+  item: PropTypes.objectOf(PropTypes.any),
   onClick: PropTypes.func,
   src: PropTypes.string,
   tag: PropTypes.string,
